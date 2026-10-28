@@ -148,7 +148,7 @@ export function FeedScreen() {
           )}
         </View>
 
-        {/* Categorias */}
+       
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
