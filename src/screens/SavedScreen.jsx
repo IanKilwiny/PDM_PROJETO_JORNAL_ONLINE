@@ -1,21 +1,23 @@
 import { useState } from 'react';
 import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import {
-  BottomNavigation,
   CategoryFilter,
   EmptyState,
   FeedHeader,
   NewsCard,
   SearchBar,
 } from '../components/feed';
-import { categories, news } from '../data/feedData';
+import { categories } from '../data/feedData';
+import { useNews } from '../context/NewsContext';
 
-export function FeedScreen() {
+export function SavedScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [search, setSearch] = useState('');
-  const [savedNews, setSavedNews] = useState([]);
+  const { news, isSaved, toggleSaved } = useNews();
 
-  const filteredNews = news.filter((item) => {
+  const savedNews = news.filter((item) => isSaved(item.id));
+
+  const filteredNews = savedNews.filter((item) => {
     const matchesCategory =
       selectedCategory === 'Todas' || item.category === selectedCategory;
     const normalizedSearch = search.toLowerCase();
@@ -25,14 +27,6 @@ export function FeedScreen() {
 
     return matchesCategory && matchesSearch;
   });
-
-  function toggleSaved(id) {
-    setSavedNews((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id]
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -60,7 +54,7 @@ export function FeedScreen() {
             <NewsCard
               key={item.id}
               item={item}
-              isSaved={savedNews.includes(item.id)}
+              isSaved={isSaved(item.id)}
               onToggleSaved={() => toggleSaved(item.id)}
             />
           ))}
@@ -68,8 +62,6 @@ export function FeedScreen() {
           {filteredNews.length === 0 && <EmptyState />}
         </View>
       </ScrollView>
-
-      <BottomNavigation />
     </View>
   );
 }

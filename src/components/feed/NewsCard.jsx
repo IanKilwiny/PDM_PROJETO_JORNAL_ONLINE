@@ -1,9 +1,15 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppNavigation } from '../../navigation/useAppNavigation';
 
 export function NewsCard({ item, isSaved, onToggleSaved }) {
+  const { openArticle } = useAppNavigation();
+
   return (
-    <Pressable style={styles.card} onPress={() => {}}>
+    <Pressable
+      style={styles.card}
+      onPress={() => openArticle(item.id)}
+    >
       <Image source={{ uri: item.image }} style={styles.image} />
 
       <View style={styles.content}>
@@ -16,7 +22,10 @@ export function NewsCard({ item, isSaved, onToggleSaved }) {
 
         <View style={styles.footer}>
           <Pressable
-            onPress={onToggleSaved}
+            onPress={(event) => {
+              event.stopPropagation();
+              onToggleSaved();
+            }}
             accessibilityLabel={
               isSaved ? 'Remover dos salvos' : 'Salvar notícia'
             }
