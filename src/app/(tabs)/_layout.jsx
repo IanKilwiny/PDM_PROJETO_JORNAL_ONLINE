@@ -40,6 +40,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="rss"
+        options={{
+          title: 'RSS',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="logo-rss" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

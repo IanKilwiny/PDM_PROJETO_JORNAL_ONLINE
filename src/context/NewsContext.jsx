@@ -12,6 +12,7 @@ const NewsContext = createContext(null);
 
 export function NewsProvider({ children }) {
   const [savedNewsIds, setSavedNewsIds] = useState([]);
+  const [rssFeeds, setRssFeeds] = useState([]);
 
   const toggleSaved = useCallback((id) => {
     setSavedNewsIds((current) =>
@@ -25,15 +26,20 @@ export function NewsProvider({ children }) {
     (id) => savedNewsIds.includes(id),
     [savedNewsIds]
   );
+  const addRssFeed = useCallback((feed) => {
+    setRssFeeds((currentFeeds) => [feed, ...currentFeeds]);
+  }, []);
   const value = useMemo(
     () => ({
       news: initialNews,
       savedNewsIds,
       savedNews: initialNews.filter((item) => savedNewsIds.includes(item.id)),
+      rssFeeds,
+      addRssFeed,
       toggleSaved,
       isSaved,
     }),
-    [isSaved, savedNewsIds, toggleSaved]
+    [addRssFeed, isSaved, rssFeeds, savedNewsIds, toggleSaved]
   );
 
   return <NewsContext.Provider value={value}>{children}</NewsContext.Provider>;
