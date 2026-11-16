@@ -13,6 +13,7 @@ import { NewsProvider } from '../context/NewsContext';
 import { ArticleDetailScreen } from '../screens/ArticleDetailScreen';
 import { FeedScreen } from '../screens/FeedScreen';
 import { SavedScreen } from '../screens/SavedScreen';
+import { RssScreen } from '../screens/RssScreen';
 
 function TabLayout() {
   return (
@@ -61,6 +62,27 @@ function TabLayout() {
             </>
           )}
         </NavLink>
+
+        <NavLink
+          to="/rss"
+          style={({ isActive }) => ({
+            ...styles.tab,
+            ...(isActive ? styles.activeTab : {}),
+          })}
+        >
+          {({ isActive }) => (
+            <>
+              <Ionicons
+                name="logo-rss"
+                size={23}
+                color={isActive ? '#087F82' : '#64748B'}
+              />
+              <Text style={[styles.tabLabel, isActive && styles.activeLabel]}>
+                RSS
+              </Text>
+            </>
+          )}
+        </NavLink>
       </View>
     </View>
   );
@@ -72,6 +94,7 @@ function WebRoutes() {
       <Route element={<TabLayout />}>
         <Route index element={<FeedScreen />} />
         <Route path="saved" element={<SavedScreen />} />
+        <Route path="rss" element={<RssScreen />} />
       </Route>
       <Route path="news/:id" element={<ArticleDetailScreen />} />
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -106,9 +129,11 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
+    gap: 6,
     textDecorationLine: 'none',
   },
   activeTab: {

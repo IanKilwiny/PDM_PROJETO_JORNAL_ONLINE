@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import {
   Alert,
   Image,
+  Linking,
   Pressable,
   Platform,
   ScrollView,
-  Share,
   StatusBar,
   StyleSheet,
   Text,
@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useNews } from '../context/NewsContext';
 import { useAppNavigation } from '../navigation/useAppNavigation';
+import { shareNews } from '../utils/shareNews';
 
 export function ArticleDetailScreen() {
   const { id, goBack } = useAppNavigation();
@@ -36,28 +37,14 @@ export function ArticleDetailScreen() {
   const saved = isSaved(article.id);
 
   const handleShare = async () => {
-    const message = `Veja esta notícia: ${article.title} - ${article.source}`;
-
-    if (Platform.OS === 'web') {
-      try {
-        if (typeof navigator.share === 'function') {
-          await navigator.share({ text: message });
-        } else if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(message);
-          window.alert('Texto da notícia copiado para compartilhar.');
-        } else {
-          window.prompt('Copie o texto para compartilhar:', message);
-        }
-      } catch {
-        window.alert('Não foi possível compartilhar a notícia.');
-      }
-      return;
-    }
-
     try {
-      await Share.share({ message });
+      await shareNews(article);
     } catch {
-      Alert.alert('Não foi possível compartilhar a notícia.');
+      if (Platform.OS === 'web') {
+        window.alert('Não foi possível compartilhar a notícia.');
+      } else {
+        Alert.alert('Não foi possível compartilhar a notícia.');
+      }
     }
   };
 
@@ -112,6 +99,29 @@ export function ArticleDetailScreen() {
               <Ionicons name="share-social-outline" size={18} color="#075E63" />
               <Text style={styles.shareButtonText}>Compartilhar</Text>
             </Pressable>
+            {article.url && (
+              <Pressable
+                style={styles.shareButton}
+                onPress={async () => {
+                  try {
+                    await Linking.openURL(article.url);
+                  } catch {
+                    if (Platform.OS === 'web') {
+                      window.alert('Não foi possível abrir a notícia original.');
+                    } else {
+                      Alert.alert('Não foi possível abrir a notícia original.');
+                    }
+                  }
+                }}
+              >
+                <Ionicons
+                  name="open-outline"
+                  size={18}
+                  color="#075E63"
+                />
+                <Text style={styles.shareButtonText}>Ler notícia completa</Text>
+              </Pressable>
+            )}
           </View>
 
           <Text style={styles.summary}>{article.summary}</Text>
@@ -208,6 +218,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   actionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
     marginBottom: 20,
   },
   shareButton: {
