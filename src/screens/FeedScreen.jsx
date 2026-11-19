@@ -15,6 +15,10 @@ export function FeedScreen() {
   const [search, setSearch] = useState('');
   const { news, isSaved, toggleSaved } = useNews();
 
+  const feedCategories = categories.includes('RSS')
+  ? categories
+  : [...categories, 'RSS'];
+
   const filteredNews = news.filter((item) => {
     const matchesCategory =
       selectedCategory === 'Todas' || item.category === selectedCategory;
@@ -42,7 +46,7 @@ export function FeedScreen() {
           onClear={() => setSearch('')}
         />
         <CategoryFilter
-          categories={categories}
+          categories={feedCategories}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />

@@ -77,7 +77,13 @@ export function ArticleDetailScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image source={{ uri: article.image }} style={styles.image} />
+        {article.image ? (
+  <Image source={{ uri: article.image }} style={styles.image} />
+) : (
+  <View style={[styles.image, { alignItems: 'center', justifyContent: 'center' }]}>
+    <Ionicons name="newspaper-outline" size={48} color="#94A3B8" />
+  </View>
+)}
 
         <View style={styles.content}>
           <View style={styles.tagRow}>
@@ -124,13 +130,19 @@ export function ArticleDetailScreen() {
             )}
           </View>
 
-          <Text style={styles.summary}>{article.summary}</Text>
+          {(article.summary || article.description) ? (
+  <Text style={styles.summary}>
+    {article.summary || article.description}
+  </Text>
+) : null}
 
-          {article.body.map((paragraph) => (
-            <Text key={paragraph} style={styles.bodyText}>
-              {paragraph}
-            </Text>
-          ))}
+          {(Array.isArray(article.body) ? article.body : []).map(
+              (paragraph, index) => (
+                  <Text key={index} style={styles.bodyText}>
+               {paragraph}
+    </Text>
+  )
+)}
         </View>
       </ScrollView>
     </View>
