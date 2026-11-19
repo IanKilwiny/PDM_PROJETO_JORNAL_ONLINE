@@ -1,9 +1,31 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppNavigation } from '../../navigation/useAppNavigation';
+import { shareNews } from '../../utils/shareNews';
 
 export function NewsCard({ item, isSaved, onToggleSaved }) {
   const { openArticle } = useAppNavigation();
+
+  const handleShare = async (event) => {
+    event.stopPropagation();
+    try {
+      await shareNews(item);
+    } catch {
+      if (Platform.OS === 'web') {
+        window.alert('Não foi possível compartilhar a notícia.');
+      } else {
+        Alert.alert('Não foi possível compartilhar a notícia.');
+      }
+    }
+  };
 
   return (
     <Pressable
@@ -22,6 +44,18 @@ export function NewsCard({ item, isSaved, onToggleSaved }) {
 
         <View style={styles.footer}>
           <Pressable
+            onPress={handleShare}
+            accessibilityLabel="Compartilhar notícia"
+            accessibilityRole="button"
+            hitSlop={8}
+          >
+            <Ionicons
+              name="share-social-outline"
+              size={20}
+              color="#075E63"
+            />
+          </Pressable>
+          <Pressable
             onPress={(event) => {
               event.stopPropagation();
               onToggleSaved();
@@ -29,6 +63,7 @@ export function NewsCard({ item, isSaved, onToggleSaved }) {
             accessibilityLabel={
               isSaved ? 'Remover dos salvos' : 'Salvar notícia'
             }
+            accessibilityRole="button"
             hitSlop={8}
           >
             <Ionicons
@@ -92,7 +127,9 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   footer: {
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 8,
   },
 });

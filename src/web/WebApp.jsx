@@ -129,9 +129,11 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
+    gap: 6,
     textDecorationLine: 'none',
   },
   activeTab: {
