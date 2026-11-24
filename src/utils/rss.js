@@ -1,3 +1,5 @@
+import { formatDateTime } from './date';
+
 function decodeXml(value) {
   return value
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -60,13 +62,6 @@ function createArticleId(feedId, url) {
   return `rss-${feedId}-${Math.abs(hash)}`;
 }
 
-function formatDate(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? 'Fonte RSS'
-    : date.toLocaleDateString('pt-BR');
-}
-
 function limitSummary(summary) {
   if (summary.length <= 280) {
     return summary;
@@ -100,7 +95,7 @@ export function parseRssFeed(xml, feed) {
         sourceId: feed.id,
         source: feed.name,
         category: feed.category,
-        time: formatDate(
+        time: formatDateTime(
           getTagValue(item, ['pubDate', 'published', 'updated', 'date'])
         ),
         author: feed.name,

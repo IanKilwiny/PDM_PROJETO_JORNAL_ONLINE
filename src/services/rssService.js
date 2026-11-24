@@ -1,5 +1,6 @@
 
 import { XMLParser } from 'fast-xml-parser';
+import { formatDateTime } from '../utils/date';
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -14,6 +15,36 @@ function getText(value) {
     return value['#text'] ?? '';
   }
   return '';
+}
+
+function getImage(item, fallback) {
+  const mediaSources = [
+    item.enclosure,
+    item['media:content'],
+    item['media:thumbnail'],
+  ];
+
+  for (const source of mediaSources) {
+    const media = Array.isArray(source) ? source[0] : source;
+    const url = media?.['@_url'] ?? media?.url;
+
+    if (url) {
+      return getText(url);
+    }
+  }
+
+  const htmlContent = [
+    item['content:encoded'],
+    item.description,
+    item.summary,
+  ]
+    .map(getText)
+    .find((content) => content.includes('<img'));
+  const imageMatch = htmlContent?.match(
+    /<img\b[^>]*\bsrc=["']([^"']+)["']/i
+  );
+
+  return imageMatch?.[1]?.replace(/&amp;/g, '&') ?? fallback ?? null;
 }
 
 export async function fetchRssFeed(feed) {
@@ -40,6 +71,7 @@ export async function fetchRssFeed(feed) {
 
   return items.map((item, index) => {
     const rawLink = item.link;
+    const pubDate = getText(item.pubDate ?? item.published ?? item.updated);
 
     const link = typeof rawLink === 'string'
       ? rawLink
@@ -63,9 +95,9 @@ export async function fetchRssFeed(feed) {
         author: getText(item.author ?? item.creator),
         category: 'RSS',
         url: link,
-        pubDate: getText(item.pubDate ?? item.published ?? item.updated),
-        time: getText(item.pubDate ?? item.published ?? ''),
-        image: item.enclosure?.['@_url'] || null,
+        pubDate,
+        time: formatDateTime(pubDate),
+        image: getImage(item, feed.image),
 };
   });
 }

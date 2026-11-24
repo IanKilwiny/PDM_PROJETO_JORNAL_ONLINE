@@ -32,7 +32,17 @@ export function NewsCard({ item, isSaved, onToggleSaved }) {
       style={styles.card}
       onPress={() => openArticle(item.id)}
     >
-      <Image source={{ uri: item.image }} style={styles.image} />
+      {item.image ? (
+        <Image
+          source={{ uri: item.image }}
+          resizeMode="cover"
+          style={styles.image}
+        />
+      ) : (
+        <View style={[styles.image, styles.imagePlaceholder]}>
+          <Ionicons name="newspaper-outline" size={26} color="#94A3B8" />
+        </View>
+      )}
 
       <View style={styles.content}>
         <View style={styles.metadata}>
@@ -98,6 +108,10 @@ const styles = StyleSheet.create({
     height: 82,
     borderRadius: 9,
     backgroundColor: '#E2E8F0',
+  },
+  imagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,
