@@ -23,7 +23,7 @@ function toHtml(value) {
     return '';
   }
 
-  return /<\/?[a-z][^>]*>/i.test(content) ? content : escapeHtml(content);
+  return /<\/?[a-z][^>]*>/i.test(content) ?  content : escapeHtml(content);
 }
 
 function getBodyHtml(body) {
