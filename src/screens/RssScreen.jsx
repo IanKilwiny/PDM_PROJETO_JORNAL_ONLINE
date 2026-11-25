@@ -18,6 +18,7 @@ import { FeedHeader } from '../components/feed/FeedHeader';
 import { NewsCard } from '../components/feed/NewsCard';
 
 const requestTimeoutMs = 15000;
+const maxArticlesPerFeed = 4;
 
 function getFeedError(reason) {
   if (reason?.name === 'AbortError') {
@@ -66,7 +67,7 @@ export function RssScreen() {
 
           const articles = parseRssFeed(await response.text(), feed).slice(
             0,
-            15
+            maxArticlesPerFeed
           );
 
           if (articles.length === 0) {
